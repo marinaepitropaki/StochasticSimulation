@@ -51,15 +51,14 @@ class LCGFromScratch:
         # Creating histogram
         fig, ax = plt.subplots(figsize=(10, 7))
         #n_bins = 5 #expected 10 bins
-        ax.hist(randomNums, 
-                bins=n_bins, 
-                #range=(0, 10), 
-                color='blue', 
-                alpha=0.5)
+        counts, bins, bars = ax.hist(randomNums, 
+                                     bins=n_bins, 
+                                     color='blue', 
+                                     alpha=0.5)
         plt.legend([f'Bins: {n_bins}'])
         plt.show()
         
-        return randomNums
+        return counts, bins, bars
 
     
 #%% Tests
@@ -77,6 +76,22 @@ class LCGFromScratch:
         ax.set_ylabel('Y')
         ax.set_title('Random Number Generator Scatter Plot')
         plt.show()
+        
+    def chiSquareTest(self, observed_frequencies, expected_frequencies):
+        #graph expected
+        
+        # Calculate the chi-square statistic
+        chi_square = 0
+        for observed, expected in zip(observed_frequencies, expected_frequencies):
+            chi_square += ((observed - expected) ** 2) / expected
+
+        # Calculate the critical value for the chi-square test
+        critical_value = 16.92  # From chi-square distribution table with (n_bins - 1) degrees of freedom and significance level 0.05
+
+        # Perform the chi-square test
+        p_value = 1 if chi_square < critical_value else 0
+
+        return chi_square, p_value
         
 
     def kolmogorov_smirnov_test(self, sample1, sample2, alpha):
@@ -104,21 +119,7 @@ class LCGFromScratch:
         else:
             return "Cannot reject null hypothesis. The samples are not significantly different."
     
-    def chiSquareTest(self, observed_frequencies, expected_frequencies):
-        #graph expected
-        
-        # Calculate the chi-square statistic
-        chi_square = 0
-        for observed, expected in zip(observed_frequencies, expected_frequencies):
-            chi_square += ((observed - expected) ** 2) / expected
-
-        # Calculate the critical value for the chi-square test
-        critical_value = 16.92  # From chi-square distribution table with (n_bins - 1) degrees of freedom and significance level 0.05
-
-        # Perform the chi-square test
-        p_value = 1 if chi_square < critical_value else 0
-
-        return chi_square, p_value
+    
     
     def above_below_test(self, data, median):
         # graph expected
@@ -224,18 +225,32 @@ lcg = LCGFromScratch()
 
 #bad choice
 randomNums = lcg.linearCongruentialMethod(lcg.Xo, lcg.m, lcg.a, lcg.c, lcg.randomNums, lcg.noOfRandomNums)
-lcg.generateHist(randomNums, 5)
+counts, bins, bars = lcg.generateHist(randomNums, 5)
 lcg.scatterTest(randomNums)
+print("Counts: {},".format(counts))
+expected_frequencies= [lcg.noOfRandomNums/5]*len(bins)
+chi_square, p_value =lcg.chiSquareTest(counts, expected_frequencies)
+print("Chi_square: {}, binary_p_value{}".format(chi_square, p_value))
 
 #good choice
 randomNums2 = lcg.linearCongruentialMethod(3, 50000, 5, 1, lcg.randomNums, lcg.noOfRandomNums)
-lcg.generateHist(randomNums2, 25)
+counts2, bins2, bars2 = lcg.generateHist(randomNums2, 25)
 lcg.scatterTest(randomNums2)
+print("Counts2: {}".format(counts2))
+expected_frequencies2= [lcg.noOfRandomNums/25]*len(bins)
+chi_square2, p_value2 =lcg.chiSquareTest(counts2, expected_frequencies2)
+print("Chi_square2: {}, binary_p_value2: {}".format(chi_square2, p_value2))
 
 #good choice
 randomNums3 = lcg.linearCongruentialMethod(3, 65536, 129, 26461, lcg.randomNums, 10000)
-lcg.generateHist(randomNums3, 25)
+counts3, bins3, bars3 = lcg.generateHist(randomNums3, 25)
 lcg.scatterTest(randomNums3)
+print("Counts3: {}".format(counts3))
+expected_frequencies3= [lcg.noOfRandomNums/25]*len(bins)
+chi_square3, p_value3 =lcg.chiSquareTest(counts3, expected_frequencies3)
+print("Chi_square3: {}, binary_p_value3: {}".format(chi_square3, p_value3))
+
+
 
 #%% Kolmogorov
 
