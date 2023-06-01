@@ -86,10 +86,12 @@ class LCGFromScratch:
             chi_square += ((observed - expected) ** 2) / expected
 
         # Calculate the critical value for the chi-square test
+        # calculate it by hand
         critical_value = 16.92  # From chi-square distribution table with (n_bins - 1) degrees of freedom and significance level 0.05
 
         # Perform the chi-square test
         p_value = 1 if chi_square < critical_value else 0
+        
 
         return chi_square, p_value
         
@@ -230,7 +232,7 @@ lcg.scatterTest(randomNums)
 print("Counts: {},".format(counts))
 expected_frequencies= [lcg.noOfRandomNums/5]*len(bins)
 chi_square, p_value =lcg.chiSquareTest(counts, expected_frequencies)
-print("Chi_square: {}, binary_p_value{}".format(chi_square, p_value))
+print("Chi_square: {}, binary_p_value: {}".format(chi_square, p_value))
 
 #good choice
 randomNums2 = lcg.linearCongruentialMethod(3, 50000, 5, 1, lcg.randomNums, lcg.noOfRandomNums)
