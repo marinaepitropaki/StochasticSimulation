@@ -78,7 +78,6 @@ class LCGFromScratch:
         plt.show()
         
     def chiSquareTest(self, observed_frequencies, expected_frequencies):
-        #graph expected
         
         # Calculate the chi-square statistic
         chi_square = 0
@@ -233,8 +232,12 @@ print("Counts: {},".format(counts))
 expected_frequencies= [lcg.noOfRandomNums/5]*len(bins)
 chi_square, p_value =lcg.chiSquareTest(counts, expected_frequencies)
 print("Chi_square: {}, binary_p_value: {}".format(chi_square, p_value))
+# Apply the Kolmogorov-Smirnov test
+#alpha = 0.05
+#result = lcg.kolmogorov_smirnov_test(counts, expected_frequencies, alpha)
+#print("Kolmogorov: {},".format(result))
 
-#good choice
+#bad choice
 randomNums2 = lcg.linearCongruentialMethod(3, 50000, 5, 1, lcg.randomNums, lcg.noOfRandomNums)
 counts2, bins2, bars2 = lcg.generateHist(randomNums2, 25)
 lcg.scatterTest(randomNums2)
@@ -297,45 +300,7 @@ a_values = [1, 2, 3]
 c_values = [1, 2, 3]
 M_values = [100, 200, 300]
 
-# Loop through all combinations of values
-for a in a_values:
-    for c in c_values:
-        for M in M_values:
-            # Create an instance of LCGFromScratch with current values
-            lcg = LCGFromScratch()
-            lcg.a = a
-            lcg.c = c
-            lcg.M = M
-'''          
-            # Generate random numbers and perform statistical tests
-            random_nums = lcg.randomNums
-            # Perform statistical tests and evaluation
-            # Example: Chi-squared test
-            observed, bins = np.histogram(random_nums, bins='auto')
-            expected = np.mean(observed) * np.ones_like(observed)
-            #chi2_stat, chi2_pvalue = chisquare(observed, expected)
-            
-            # Example: Kolmogorov-Smirnov test
-            #ks_stat, ks_pvalue = kstest(random_nums, 'uniform')
-            
-            # Evaluate the quality of the generator and calculate a score
-            # Calculate a score based on the statistical tests and evaluation
-            #score = chi2_pvalue * ks_pvalue
-            
-            # Update the best and worst combinations if necessary
-            if score < best_score:
-                best_score = score
-                best_combination = (a, b, M)
-            
-            if score > worst_score:
-                worst_score = score
-                worst_combination = (a, b, M)
-                
 
-# Print the best and worst combinations
-print("Best combination:", best_combination)
-print("Worst combination:", worst_combination)
-'''
 
 
 
