@@ -218,32 +218,24 @@ class LCGFromScratch:
 # Create an instance of the LCGFromScratch class
 lcg = LCGFromScratch()
 
-#%% Histogram
+#%% Histogram & Scatter
 
 # Call the generateHist method
 
 #bad choice
 randomNums = lcg.linearCongruentialMethod(lcg.Xo, lcg.m, lcg.a, lcg.c, lcg.randomNums, lcg.noOfRandomNums)
 lcg.generateHist(randomNums, 5)
-
-#bad choice
-randomNums1 = lcg.linearCongruentialMethod(5, 50000, lcg.a, lcg.c, lcg.randomNums, lcg.noOfRandomNums)
-lcg.generateHist(randomNums1, 10)
+lcg.scatterTest(randomNums)
 
 #good choice
 randomNums2 = lcg.linearCongruentialMethod(3, 50000, 5, 1, lcg.randomNums, lcg.noOfRandomNums)
 lcg.generateHist(randomNums2, 25)
+lcg.scatterTest(randomNums2)
 
 #good choice
-randomNums3 = lcg.linearCongruentialMethod(3, 50000, 23, 17, lcg.randomNums, 100000)
-lcg.generateHist(randomNums2, 10)
-
-#%% ScatterPlot
-
-# Call the scatterTest method
-lcg.scatterTest(randomNums)
-
-lcg.scatterTest(randomNums2)
+randomNums3 = lcg.linearCongruentialMethod(3, 65536, 129, 26461, lcg.randomNums, 10000)
+lcg.generateHist(randomNums3, 25)
+lcg.scatterTest(randomNums3)
 
 #%% Kolmogorov
 
