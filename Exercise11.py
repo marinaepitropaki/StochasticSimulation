@@ -187,61 +187,63 @@ class LCG:
 # Start of Experiment
 
 # Define the LCGs
-# lcg_s = LCG(m=100003 , a=317, c=491)
-# lcg_m = LCG(m=1000003 , a=517, c=971)
-# lcg_l = LCG(m=1000000007, a=48271, c=0)
-# lcg_list = [lcg_s, lcg_m, lcg_l]
-# seeds = [1234, 12345, 123456]
+lcg_s = LCG(m=100003 , a=317, c=491)
+lcg_m = LCG(m=1000003 , a=517, c=971)
+lcg_l = LCG(m=1000000007, a=48271, c=0)
+lcg_list = [lcg_s, lcg_m, lcg_l]
+seeds = [1234, 12345, 123456]
 
 # Hyperparameters
 classes = 10
 sign_lvl = 0.05
 sample = 10000
 
-# for l,s in zip(lcg_list, seeds):
-#     print("\n-Beginning Experiment for LCG")
-#     print(f"a:{l.a} c:{l.c} m:{l.m} Seed:{s}")
+for l,s in zip(lcg_list, seeds):
+    print("\n-Beginning Experiment for LCG")
+    print(f"a:{l.a} c:{l.c} m:{l.m} Seed:{s}")
 
-#     # Run the LCG
-#     gen_numbers = l.run(xo=s, rns=sample)
+    # Run the LCG
+    gen_numbers = l.run(xo=s, rns=sample)
 
-#     corr(gen_numbers)
+    corr(gen_numbers)
 
-#     # Plots
-#     scatterTest(gen_numbers, m=l.m, a=l.a, c=l.c)
-#     counts = generateHist(gen_numbers, classes, m=l.m, a=l.a, c=l.c)
+    # Plots
+    scatterTest(gen_numbers, m=l.m, a=l.a, c=l.c)
+    counts = generateHist(gen_numbers, classes, m=l.m, a=l.a, c=l.c)
 
-#     # Chi squared test
-#     chiSquareTest(counts, samples=sample, classes=classes, alpha=sign_lvl)
+    # Chi squared test
+    chiSquareTest(counts, samples=sample, classes=classes, alpha=sign_lvl)
 
-#     # kolmogorov_smirnov test
-#     kolmogorov_smirnov(random_numbers=np.array(gen_numbers), m=l.m, alpha=sign_lvl)
+    # kolmogorov_smirnov test
+    kolmogorov_smirnov(random_numbers=np.array(gen_numbers), m=l.m, alpha=sign_lvl)
 
-#     # Above below test
-#     above_below_test(random_numbers=gen_numbers, sign_lvl=sign_lvl)
+    # Above below test
+    above_below_test(random_numbers=gen_numbers, sign_lvl=sign_lvl)
 
-#     # Up Down test
-#     up_down_runs_test(np.array(gen_numbers), alpha=sign_lvl)
+    # Up Down test
+    up_down_runs_test(np.array(gen_numbers), alpha=sign_lvl)
 
 print("\n-Beginning Experiment for System RNG Mersene Twister")
 random.seed(0.5)
 system_numbers = [0.5] + ([random.random() for _ in range(10000)])[:-1]
+
+# Plots
+scatterTest(system_numbers, m=0, a=0, c=0)
+counts = generateHist(system_numbers, classes, m=0, a=0, c=0)
+
+# Chi squared test
+chiSquareTest(counts, samples=sample, classes=classes, alpha=sign_lvl)
+
+# kolmogorov_smirnov test
+kolmogorov_smirnov(random_numbers=np.array(system_numbers), m=0, alpha=sign_lvl)
+
+# Above below test
+above_below_test(random_numbers=system_numbers, sign_lvl=sign_lvl)
+
+# Up Down test
+up_down_runs_test(np.array(system_numbers), alpha=sign_lvl)
+
+# Correlation
 corr(system_numbers)
-
-# # Plots
-# scatterTest(system_numbers, m=0, a=0, c=0)
-# counts = generateHist(system_numbers, classes, m=0, a=0, c=0)
-
-# # Chi squared test
-# chiSquareTest(counts, samples=sample, classes=classes, alpha=sign_lvl)
-
-# # kolmogorov_smirnov test
-# kolmogorov_smirnov(random_numbers=np.array(system_numbers), m=0, alpha=sign_lvl)
-
-# # Above below test
-# above_below_test(random_numbers=system_numbers, sign_lvl=sign_lvl)
-
-# # Up Down test
-# up_down_runs_test(np.array(system_numbers), alpha=sign_lvl)
 
 
