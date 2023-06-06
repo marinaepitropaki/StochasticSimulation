@@ -12,6 +12,7 @@ from numpy import random
 import matplotlib.pyplot as plt
 import seaborn as sns
 import time
+from scipy.stats import t
 
 def exponential_distribution(p, k_values):
     
@@ -52,6 +53,25 @@ def pareto_stats(beta, k_experiment):
     var = (beta**2)*(k_experiment/(((k_experiment-1)**2)*(k_experiment-2)))
     return mean, var
 
+def confidence_intervals(normal_dist_data, n_obs, num_int, confidence):
+    confidence_intervals = []
+    
+    
+    for _ in range(num_int):
+        sample = np.random.choice(normal_dist_data, size=n_obs, replace= False)
+        mean = np.mean(sample)
+        variance = np.var(sample, ddof=1)
+        dof = n_obs-1
+        t_crit = np.abs(t.ppf((1-confidence)/2,dof))
+        # Calculate confidence interval
+        interval_upper = mean+variance*t_crit/np.sqrt(variance / n_obs)
+        interval_lower = mean-variance*t_crit/np.sqrt(variance / n_obs)
+        confidence_intervals.append((interval_lower, interval_upper))
+    
+    return confidence_intervals
+    
+    
+    
 def distplot(data, kde=True, color=None, title = ''):
 
     sns.histplot(data, kde=kde, color = color)
@@ -65,6 +85,7 @@ p= 0.5
 size = 10000
 beta = 1
 k_experiment = [2.05, 2.5, 3, 4]
+confidence = 0.95
 
 #Generate 10000 pseudo-random numbers
 X = np.random.random(size)
@@ -72,9 +93,6 @@ X = np.random.random(size)
 z_exp = exponential_distribution(p=p, k_values=X)
 z_box1, z_box2 = box_muller(X)
 z_clt = central_limit(size, random_var=10)
-
-
-
 
 distplot(z_exp, title ='Exponential')
 distplot(z_box1, title = 'Box Muller 1')
@@ -92,4 +110,6 @@ pareto_mean, pareto_var = pareto_stats(beta, k_experiment=2.05)
 np_mean = np.mean(z_prt[0])
 np_var = np.var(z_prt[0])
 
+z_conf = confidence_intervals(z_box1, 10, 100, 0.95)
+print(z_conf)
 
