@@ -47,6 +47,11 @@ def pareto_distribution(beta, k_values, k_experiment):
     
     return z
 
+def pareto_stats(beta, k_experiment):
+    mean = beta*(k_experiment/(k_experiment-1))
+    var = (beta**2)*(k_experiment/(((k_experiment-1)**2)*(k_experiment-2)))
+    return mean, var
+
 def distplot(data, kde=True, color=None, title = ''):
 
     sns.histplot(data, kde=kde, color = color)
@@ -76,8 +81,15 @@ distplot(z_box1, title = 'Box Muller 1')
 distplot(z_box2, color = 'r', title = 'Box Muller 2')
 distplot(z_clt, color='g', title = 'Central Limit')
 
+z_prt =[]
 for k in range(len(k_experiment)):
     
     z_prt_k = pareto_distribution(beta, X, k_experiment[k])
+    z_prt.append(z_prt_k)
     distplot(z_prt_k, title= f'Pareto k ={ k_experiment[k]}')
+    
+pareto_mean, pareto_var = pareto_stats(beta, k_experiment=2.05)
+np_mean = np.mean(z_prt[0])
+np_var = np.var(z_prt[0])
+
 
