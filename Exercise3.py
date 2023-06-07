@@ -107,9 +107,25 @@ for k in range(len(k_experiment)):
     distplot(z_prt_k, title= f'Pareto k ={ k_experiment[k]}')
     
 pareto_mean, pareto_var = pareto_stats(beta, k_experiment=2.05)
+print(f'Pareto mean: {pareto_mean} \n Pareto variance: {pareto_var}')
 np_mean = np.mean(z_prt[0])
 np_var = np.var(z_prt[0])
+print(f'Analytical mean: {np_mean} \n Analytical variance: {np_var}')
 
 z_conf = confidence_intervals(z_box1, 10, 100, 0.95)
 print(z_conf)
+
+f_y = np.random.exponential(k_experiment[3], X)
+#distplot(f_y, title = 'Pareto k = {k_experiment[3]} from composition')
+
+pareto_composition = []
+for i in f_y:
+    x = exponential_distribution(i, np.random.random(1))
+    pareto_composition.append(x[0])
+
+distplot(pareto_composition)
+
+
+
+
 
