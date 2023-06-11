@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jun  5 16:00:50 2023
-
-@author: mep
-"""
-
 import numpy as np
 from math import log, pi, cos, sin, sqrt
 from numpy import random
@@ -32,25 +24,16 @@ def box_muller(k_values):
 
     return z1, z2
 
-def central_limit(size, random_var):
-    sample_means = []
-
-    for _ in range(size):
-        X = np.sum(np.random.uniform(0, 1, random_var)) - random_var / 2
-        sample_means.append(X)
-
-    return sample_means
-
-def pareto_distribution(beta, k_values, k_experiment):
+def pareto_distribution(beta, r_nums, k):
     z =[]
-    for k in range(len(k_values)):
-        z.append(beta*(k_values[k]**(-1/k_experiment)))
+    for n in r_nums:
+        z.append(beta*(n**(-1/k)))
     
     return z
 
-def pareto_stats(beta, k_experiment):
-    mean = beta*(k_experiment/(k_experiment-1))
-    var = (beta**2)*(k_experiment/(((k_experiment-1)**2)*(k_experiment-2)))
+def pareto_stats(beta, k):
+    mean = beta*(k/(k-1))
+    var = (beta**2)*(k/(((k-1)**2)*(k-2)))
     return mean, var
 
 def confidence_intervals(normal_dist_data, n_obs, num_int, confidence):
@@ -63,6 +46,7 @@ def confidence_intervals(normal_dist_data, n_obs, num_int, confidence):
         variance = np.var(sample, ddof=1)
         dof = n_obs-1
         t_crit = np.abs(t.ppf((1-confidence)/2,dof))
+        
         # Calculate confidence interval
         interval_upper = mean+variance*t_crit/np.sqrt(variance / n_obs)
         interval_lower = mean-variance*t_crit/np.sqrt(variance / n_obs)
@@ -81,51 +65,32 @@ def distplot(data, kde=True, color=None, title = ''):
     plt.title(f'{title} Distribution Plot')
     plt.show()
 
-p= 0.5
+# Initialize
+p = 0.5
 size = 10000
 beta = 1
 k_experiment = [2.05, 2.5, 3, 4]
 confidence = 0.95
 
-#Generate 10000 pseudo-random numbers
+#Generate 10000 uniform distributed numbers
 X = np.random.random(size)
-    
+
+# Part 1.a
 z_exp = exponential_distribution(p=p, k_values=X)
 z_box1, z_box2 = box_muller(X)
-z_clt = central_limit(size, random_var=10)
 
 distplot(z_exp, title ='Exponential')
 distplot(z_box1, title = 'Box Muller 1')
 distplot(z_box2, color = 'r', title = 'Box Muller 2')
-distplot(z_clt, color='g', title = 'Central Limit')
 
 z_prt =[]
-for k in range(len(k_experiment)):
-    
-    z_prt_k = pareto_distribution(beta, X, k_experiment[k])
+for k in k_experiment:
+    z_prt_k = pareto_distribution(beta, X, k)
     z_prt.append(z_prt_k)
-    distplot(z_prt_k, title= f'Pareto k ={ k_experiment[k]}')
-    
-pareto_mean, pareto_var = pareto_stats(beta, k_experiment=2.05)
-print(f'Pareto mean: {pareto_mean} \n Pareto variance: {pareto_var}')
-np_mean = np.mean(z_prt[0])
-np_var = np.var(z_prt[0])
-print(f'Analytical mean: {np_mean} \n Analytical variance: {np_var}')
+    distplot(z_prt_k, title= f'Pareto k ={ k}')
 
+# part 3
 z_conf = confidence_intervals(z_box1, 10, 100, 0.95)
 print(z_conf)
-
-f_y = np.random.exponential(k_experiment[3], X)
-#distplot(f_y, title = 'Pareto k = {k_experiment[3]} from composition')
-
-pareto_composition = []
-for i in f_y:
-    x = exponential_distribution(i, np.random.random(1))
-    pareto_composition.append(x[0])
-
-distplot(pareto_composition)
-
-
-
 
 

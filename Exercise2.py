@@ -1,36 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jun  1 21:56:45 2023
-
-@author: mep
-"""
-
-# Exercise 2
-
 import random
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import time
 
-'''
-def geometric_distribution(p, k_values):
-
-    q = 1 - p  # Probability of failure in a single trial
-    # list, probability mass function
-    pmf = [p * (q ** (k - 1)) for k in k_values]
-    
-    return pmf
-
-def geometric_distribution(p, k_values):
-    # Convert k_values to integers
-    k_values = [int(k) for k in k_values]
-
-    # Generate the geometric distribution
-    pmf = [p * ((1 - p) ** (k - 1)) for k in k_values]
-
-    return pmf
-'''
 def geometric_distribution(p, k_values):
     pmf =[]
     for k in range(len(k_values)):
@@ -50,10 +23,10 @@ def compare_geometric_histograms(generated, expected, n_bins):
     plt.legend()
     plt.show()
 
-def compare_six_point_histograms(crude, rejection, alias, n_bins):
+def compare_distribution_histograms(crude, rejection, alias, n_bins):
     
+    plt.figure(figsize=(10, 8))
     plt.hist([crude, rejection, alias], bins=n_bins, density=True, alpha=0.5, color=['b', 'r', 'g'], label=["Crude","Rejection", "Alias"])
-    #plt.hist(expected, bins=n_bins, density=True, alpha=0.5, color='r', label='Expected')
     
     plt.xlabel('Value')
     plt.ylabel('Density')
@@ -61,9 +34,9 @@ def compare_six_point_histograms(crude, rejection, alias, n_bins):
     plt.legend()
     plt.show()
 
-def simulate_six_point_distribution_crude(p_i, q_i, X):
+def simulate_crude(p_i, size):
     outcomes = []
-    for _ in range(len(X)):
+    for _ in range(size):
         r = random.random()
         cumulative_sum = 0
         for i in range(len(p_i)):
@@ -71,20 +44,21 @@ def simulate_six_point_distribution_crude(p_i, q_i, X):
             if cumulative_sum >= r:
                 outcomes.append(i+1)
                 break
+
     return outcomes
 
-def simulate_six_point_distribution_rejection(p_i, q_i, X):
-    outcomes = []
-    M = max([p / q for p, q in zip(p_i, q_i)])  # Calculate the upper bound M
-    while len(outcomes) < len(X):
-        r = random.random()
-        k = random.randint(1, 6)
-        if r <= p_i[k-1] / (M * q_i[k-1]):
-            outcomes.append(k)
-    return outcomes
+def simulate_rejection(p_i, q_i, size):
+  outcomes = []
+  M = max([p / q for p, q in zip(p_i, q_i)])  # Calculate the upper bound M
+  while len(outcomes) < size:
+      r = random.random()
+      k = random.choices(range(1, 7), q_i)[0]  # Choose k with probability q_i
+      if r <= p_i[k-1] / (M * q_i[k-1]):
+          outcomes.append(k)
+  return outcomes
     
 
-def simulate_six_point_distribution_alias(p_i, X):
+def simulate_alias(p_i, size):
     num_outcomes = len(p_i)
 
     target_prob = [p * num_outcomes for p in p_i]
@@ -117,7 +91,7 @@ def simulate_six_point_distribution_alias(p_i, X):
             large_prob.append(q)
 
     outcomes = []
-    for _ in range(len(X)):
+    for _ in range(size):
         j = random.randint(0, num_outcomes - 1)
         r = random.random()
 
@@ -128,27 +102,34 @@ def simulate_six_point_distribution_alias(p_i, X):
 
     return outcomes
 
-p= 0.5
-size = 10000
 
-#Generate 10000 pseudo-random numbers
+p = 0.5
+size = 10000
+# Generate 10000 pseudo-random numbers
 X = np.random.random(size)
 
-# Convert random numbers to the appropriate range for the geometric distribution
-#k_values = np.ceil(np.log(X) / np.log(1 - p))
-    
+# Geometric distribution
 z_exp = np.random.geometric(p=p, size=size)
 z_gen = geometric_distribution(p=p, k_values=X)
 compare_geometric_histograms(z_gen, z_exp, max(max(z_exp), max(z_gen)) - 1)
 
+# Different methods
 p_i = [7/48, 5/48, 1/8, 1/16, 1/4, 5/16]
-X_i = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6]
+q_i = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6]
 
-outcomes_crude = simulate_six_point_distribution_crude(p_i, X_i, X)
+start = time.time()
+outcomes_crude = simulate_crude(p_i, size) # crude
+end = time.time()
+print(end-start)
 
-outcomes_rejection = simulate_six_point_distribution_rejection(p_i, X_i, X)
+start = time.time()
+outcomes_rejection = simulate_rejection(p_i, q_i, size) # rejection
+end = time.time()
+print(end-start)
 
-outcomes_alias = simulate_six_point_distribution_alias(p_i, X)
+start = time.time()
+outcomes_alias = simulate_alias(p_i, size) # alias
+end = time.time()
+print(end-start)
 
-compare_six_point_histograms(outcomes_crude, outcomes_rejection, outcomes_alias, max(max(z_exp), max(z_gen)) - 1)
-
+compare_distribution_histograms(outcomes_crude, outcomes_rejection, outcomes_alias, 6)
